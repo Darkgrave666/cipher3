@@ -1,44 +1,25 @@
-from abc import ABC, abstractmethod
-from pathlib import Path
-from cipher import Cipher
-from uncipher import Uncipher
-import pickle
-
-BASE_DIR = Path(__file__).resolve().parent
+from snake_case import to_snake_case
+from camel_case import to_camel_case
 
 
-class AbstractDataClass(ABC):
+class NameConverter:
+    def __init__(self, c: str, s: str, cf: bool):
+        self.c = c
+        self.s = s
+        self.cf = cf
+        if c == "snake":
+            self.s = to_snake_case(s)
+        elif c == "camel":
+            self.s = to_camel_case(s, cf)
 
-    def __init__(self, filepath: str):
-        self.filepath = filepath
-
-    @abstractmethod
-    def datacipher(self, s: str):
-        pass
-
-    @abstractmethod
-    def datauncipher(self):
-        pass
-
-
-class DataCipherSave(AbstractDataClass):
-
-    def datacipher(self, s: str):
-        with open(self.filepath, "wb") as f:
-            pickle.dump(s, f)
-
-    def datauncipher(self):
-        with open(self.filepath, "rb") as f:
-            return pickle.load(f)
+    def __str__(self):
+        return self.s
 
 
 if __name__ == '__main__':
-    s = input()
-    k = int(input())
-    c = Cipher(s, k)
-    se = DataCipherSave(str(BASE_DIR.joinpath('secr.pickle')))
-    se.datacipher(c)
-    print(c)
-    r = se.datauncipher()
-    r1 = Uncipher(str(r), k)
-    print(r1)
+    sn = NameConverter("snake", "Snake Case", True)
+    ca = NameConverter("camel", "camel case", True)
+    print(sn)
+    print(ca)
+    print(NameConverter("snake", str(ca), True))
+    print(NameConverter("camel", str(sn), False))
